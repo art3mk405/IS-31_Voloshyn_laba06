@@ -1,28 +1,27 @@
-function checkBrackets(JsCode){ 
-    const jsCode = Array.from(JsCode);
-    const brackets = jsCode.reduce((result, symbol) => {
-        if(result.hasOwnProperty(symbol))        
-            result[symbol] += 1;
-        return result;
-    },{"{":0, "}":0, "[":0, "]":0, "(":0, ")":0});
-    return (brackets["{"] == brackets["}"]) && (brackets["["] == brackets["]"]) && (brackets["("] == brackets[")"]);
+function checkBrackets(JsCode) {
+    const stack = [];
+    const openingBrackets = ['{', '[', '('];
+    const closingBrackets = ['}', ']', ')'];
+    const matchingBrackets = {
+        '}': '{',
+        ']': '[',
+        ')': '('
+    };
+
+    for (let i = 0; i < JsCode.length; i++) {
+        const char = JsCode[i];
+        if (openingBrackets.includes(char)) {
+            stack.push(char);
+        } else if (closingBrackets.includes(char)) {
+            const lastOpened = stack.pop();
+            if (matchingBrackets[char] !== lastOpened) {
+                return false;
+            }
+        }
+    }
+    return stack.length === 0;
 }
-
-let someRightJSCode = `for(const concert of Object.entries(concerts)){
-    if(concert[1]>today)
-        futureConcerts.push(concert);
-}`;
-let someWrongJSCode = `for(const concert of Object.entries(concerts)   {
-    if(concert[1  >today)
-        futureConcerts.push(concert);
-}`;
-
-console.log("Some right JS code");
-console.log(someRightJSCode);
-console.log("Some wrong JS code");
-console.log(someWrongJSCode);
-
-console.log("Checking some right JS code");
-console.log(checkBrackets(someRightJSCode));
-console.log("Checking some wrong JS code");
-console.log(checkBrackets(someWrongJSCode));
+console.log("Checking some right JS code:");
+console.log(checkBrackets("function example() { return true; }"));
+console.log("Checking some wrong JS code:");
+console.log(checkBrackets("function example() { return true; ")); 
